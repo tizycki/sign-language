@@ -2,7 +2,7 @@ FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
 
 WORKDIR /
 
-ARG git_repo_url='https://github.com/CMU-Perceptual-Computing-Lab/openpose.git'
+ARG GIT_REPO_URL='https://github.com/CMU-Perceptual-Computing-Lab/openpose.git'
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -y update && \
@@ -10,7 +10,7 @@ RUN apt-get -y update && \
     apt-get install -y software-properties-common && \
     add-apt-repository -y ppa:deadsnakes/ppa && \
     apt-get -y update && \
-	apt-get -y install python3.7 && \
+	apt-get -y install python3.6 && \
     apt-get install -y \
         git \
         wget \
@@ -19,8 +19,10 @@ RUN apt-get -y update && \
     wget -q https://cmake.org/files/v3.13/cmake-3.13.0-Linux-x86_64.tar.gz && \
     tar xfz cmake-3.13.0-Linux-x86_64.tar.gz --strip-components=1 -C /usr/local
 
-RUN git clone -q --depth 1 $git_repo_url && \
-    sed -i 's/execute_process(COMMAND git checkout master WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}\/3rdparty\/caffe)/execute_process(COMMAND git checkout f019d0dfe86f49d1140961f8c7dec22130c83154 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}\/3rdparty\/caffe)/g' openpose/CMakeLists.txt
+RUN git clone -q --depth 1 $GIT_REPO_URL && \
+    sed -i 's/execute_process(COMMAND git checkout master WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}\/3rdparty\/caffe)/\
+        execute_process(COMMAND git checkout f019d0dfe86f49d1140961f8c7dec22130c83154 \
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}\/3rdparty\/caffe)/g' openpose/CMakeLists.txt
 
 RUN apt-get -qq install -y \
         unzip && \
@@ -65,13 +67,8 @@ RUN cd openpose && \
     rm -rf build || true && \
     mkdir build && \
     cd build && \
-    cmake .. && \
-    #cmake -DBUILD_PYTHON=ON .. && \
+    #cmake .. && \
+    cmake -DBUILD_PYTHON=ON .. && \
     make -j`nproc`
-
-#RUN cd openpose && \
-#    mkdir build && \
-#    cd build && \
-#    cmake ..
 
 WORKDIR /openpose

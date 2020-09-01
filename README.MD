@@ -11,7 +11,7 @@ https://github.com/gormonn/openpose-docker
 
 1.2.2 Pull openpose docker image:
 ```
-docker build -t custom-openpose .
+docker build -t openpose-custom .
 ```
 1.2.3 Run container:
 
@@ -20,7 +20,7 @@ sudo docker run \
     -it \
     --mount type=bind,source="$(pwd)"/data,target=/openpose/data \
     --net=host \
-    -e DISPLAY --runtime=nvidia custom_openpose
+    -e DISPLAY --runtime=nvidia openpose-custom
 ```
 
 1.2.4 Example - processing images:
