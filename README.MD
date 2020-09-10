@@ -30,6 +30,5 @@ sudo docker run \
     --display 0 \
     --write_json ./data/openpose_output \
     --write_images ./data/openpose_output \
-    --face \
     --hand
 ```
