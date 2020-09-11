@@ -67,6 +67,4 @@ RUN cd sign-language/openpose && \
     cmake -DBUILD_PYTHON=ON .. && \
     make -j`nproc`
 
-COPY ./utils/* /sign-language/utils/
-
 WORKDIR /sign-language

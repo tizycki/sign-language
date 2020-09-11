@@ -18,7 +18,9 @@ docker build -t openpose-custom .
 ```
 docker run \
     -it \
+    --rm \
     --mount type=bind,source="$(pwd)"/data,target=/sign-language/data \
+    --mount type=bind,source="$(pwd)"/utils,target=/sign-language/utils \
     --net=host \
     -e DISPLAY --runtime=nvidia openpose-custom
 ```
