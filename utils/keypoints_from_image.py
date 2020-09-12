@@ -32,6 +32,7 @@ try:
     params['model_pose'] = 'BODY_25'
     params['write_json'] = args[0].write_json
     params['render_pose'] = args[0].render_pose
+    params['keypoint_scale'] = 3  # scales to range [0,1] where (0,0) is top-left corner
 
     # Starting OpenPose
     opWrapper = op.WrapperPython()
