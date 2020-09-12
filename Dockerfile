@@ -60,7 +60,8 @@ RUN python3 -m pip install -U pip && \
     apt-get -qq install -y \
         libopencv-dev
 
-RUN cd sign-language/openpose && \
+RUN export PYTHONPATH=/usr/bin/python3 && \
+    cd sign-language/openpose && \
     rm -rf build || true && \
     mkdir build && \
     cd build && \
