@@ -68,4 +68,7 @@ RUN export PYTHONPATH=/usr/bin/python3 && \
     cmake -DBUILD_PYTHON=ON .. && \
     make -j`nproc`
 
+RUN python3 -m pip install
+        tqdm
+
 WORKDIR /sign-language
