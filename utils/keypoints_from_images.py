@@ -3,6 +3,7 @@ import cv2
 import os
 import argparse
 import time
+from tqdm import tqdm
 
 OPENPOSE_PATH = '/sign-language/openpose/'
 
@@ -38,7 +39,7 @@ def keypoints_from_images(image_dir, write_json, render_pose=-1, alpha_pose=0.5,
     start = time.time()
 
     # Process and display images
-    for image_path in image_paths:
+    for image_path in tqdm(image_paths):
         datum = op.Datum()
         image_to_process = cv2.imread(image_path)
         datum.cvInputData = image_to_process
