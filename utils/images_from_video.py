@@ -4,7 +4,7 @@ import os
 import glob
 
 
-def video_to_images(video_path, output_dir, file_name_prefix, output_fps, start_frame=0, end_frame=-1):
+def video_to_images(video_path, output_dir, file_name_prefix, output_fps, rotate, start_frame=0, end_frame=-1):
 
     # Video capture
     frame_count = 0
@@ -46,10 +46,21 @@ def video_to_images(video_path, output_dir, file_name_prefix, output_fps, start_
 
         # Save frame
         if has_frame:
-            if (frame_count >= start_frame) & (frame_count <= end_frame):
-                cv2.imwrite(os.path.join(output_path, f"{file_name_prefix}_{frame_count:06d}.jpg"), frame)
-            else:
-                print(f'Frame: {frame_count} skipped.')
+            # Skip if not in frame range
+            if frame_count < start_frame:
+                print('Frame skipped.')
+                frame_count += 1
+                continue
+            if frame_count > end_frame:
+                print('Reached end_frame defined by user.')
+                break
+
+            # Rotate if specified
+            if rotate:
+                frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+
+            # Save file
+            cv2.imwrite(os.path.join(output_path, f"{file_name_prefix}_{frame_count:06d}.jpg"), frame)
             frame_count += 1
         else:
             break
