@@ -5,16 +5,40 @@ import argparse
 
 OPENPOSE_PATH = '/sign-language/openpose/'
 
-try:
+
+def keypoints_from_image(image_path, write_json, render_pose):
     try:
         sys.path.append(os.path.join(OPENPOSE_PATH, 'build/python'))
         from openpose import pyopenpose as op
-        print('Done importing')
     except ImportError as e:
         print('Error: OpenPose library could not be found.')
         raise e
 
-    # Flags
+    # Params
+    params = dict()
+    params['write_json'] = write_json
+    params['model_folder'] = os.path.join(OPENPOSE_PATH, 'models/')
+    params["face"] = False
+    params['hand'] = True
+    params['model_pose'] = 'BODY_25'
+    params['render_pose'] = render_pose
+    params['keypoint_scale'] = 3  # scales to range [0,1] where (0,0) is top-left corner
+
+    # Starting OpenPose
+    op_wrapper = op.WrapperPython()
+    op_wrapper.configure(params)
+    op_wrapper.start()
+
+    # Read and process Image
+    datum = op.Datum()
+    image_to_process = cv2.imread(image_path)
+    datum.cvInputData = image_to_process
+    datum.name = os.path.basename(image_path).split('.')[0]
+    op_wrapper.emplaceAndPop([datum])
+
+
+if __name__ == '__main__':
+    # Parse arguments
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--image_path',
@@ -24,27 +48,9 @@ try:
     parser.add_argument('--render_pose', default=0, help='Flag for rendering pose in output image')
     args = parser.parse_known_args()
 
-    # Params
-    params = dict()
-    params["model_folder"] = os.path.join(OPENPOSE_PATH, 'models/')
-    params["face"] = False
-    params['hand'] = True
-    params['model_pose'] = 'BODY_25'
-    params['write_json'] = args[0].write_json
-    params['render_pose'] = args[0].render_pose
-    params['keypoint_scale'] = 3  # scales to range [0,1] where (0,0) is top-left corner
-
-    # Starting OpenPose
-    opWrapper = op.WrapperPython()
-    opWrapper.configure(params)
-    opWrapper.start()
-
-    # Process Image
-    datum = op.Datum()
-    imageToProcess = cv2.imread(args[0].image_path)
-    datum.cvInputData = imageToProcess
-    opWrapper.emplaceAndPop([datum])
-
-except Exception as e:
-    print(e)
-    sys.exit(-1)
+    # Get keypoints
+    keypoints_from_image(
+        args[0].image_path,
+        args[0].write_json,
+        args[0].render_pose
+    )
