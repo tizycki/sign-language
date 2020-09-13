@@ -4,7 +4,7 @@ import os
 import glob
 
 
-def video_to_images(video_path, output_dir, file_name_prefix, output_fps):
+def video_to_images(video_path, output_dir, file_name_prefix, output_fps, start_frame=0, end_frame=-1):
 
     # Video capture
     frame_count = 0
@@ -16,6 +16,9 @@ def video_to_images(video_path, output_dir, file_name_prefix, output_fps):
     video_duration = int(frames_total / input_fps)
     output_frames_total = int(frames_total * int(output_fps) / input_fps)
     print(f"Input video info:\nInput FPS: {input_fps}\nDuration: {video_duration}")
+
+    if end_frame == -1:
+        end_frame = output_frames_total
 
     # Create subdirectory for results
     video_name = f"{os.path.basename(video_path).split('.')[0].replace(' ', '_')}_fps{int(output_fps):02d}"
@@ -33,12 +36,20 @@ def video_to_images(video_path, output_dir, file_name_prefix, output_fps):
 
     # Iterate through video and save images
     while video_capture.isOpened():
+        # Set output fps
         video_capture.set(cv2.CAP_PROP_POS_MSEC, frame_count * 1000 / float(output_fps))
+
+        # Read frame
         has_frame, frame = video_capture.read()
         print(f"Processing frame of index: {frame_count:06d} / ~{output_frames_total:06d}. \
             Frame read status: {has_frame}")
+
+        # Save frame
         if has_frame:
-            cv2.imwrite(os.path.join(output_path, f"{file_name_prefix}_{frame_count:06d}.jpg"), frame)
+            if (frame_count >= start_frame) & (frame_count <= end_frame):
+                cv2.imwrite(os.path.join(output_path, f"{file_name_prefix}_{frame_count:06d}.jpg"), frame)
+            else:
+                print(f'Frame: {frame_count} skipped.')
             frame_count += 1
         else:
             break
@@ -54,6 +65,8 @@ if __name__ == "__main__":
     a.add_argument("--output_dir_path", help="Path to output directory")
     a.add_argument("--image_prefix", help="Image files name prefix")
     a.add_argument("--output_fps", help="Frames per second of output")
+    a.add_argument("--start_frame", help="Index of frame to start from")
+    a.add_argument("--end_frame", help="Index of frame to stop at")
 
     args = a.parse_args()
     print("Initializing process with parameters:")
