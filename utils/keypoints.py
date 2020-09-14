@@ -30,10 +30,21 @@ def read_keypoints(file_path):
             keypoints = json.loads(row)
 
     # Extract and concatenate selected keypoints
-    results = np.append([
-        np.array(keypoints['people'][0]['pose_keypoints_2d']).reshape(-1, 3)[:, :2],
+    results = np.concatenate([
+        np.array(keypoints['people'][0]['pose_keypoints_2d']).reshape(-1, 3)[keypoints_filter, :2],
         np.array(keypoints['people'][0]['hand_left_keypoints_2d']).reshape(-1, 3)[:, :2],
         np.array(keypoints['people'][0]['hand_right_keypoints_2d']).reshape(-1, 3)[:, :2]],
-        axis=1
+        axis=0
     )
-    return results.reshape([1, len(results), 2])
+    return results
+
+
+def rescale_keypoints(keypoints: np.array) -> np.array:
+    # Get params for min-max scaling
+    max_coordinates = np.max(keypoints, axis=0)
+    min_coordinates = np.min(keypoints, axis=0)
+
+    # Filter
+    keypoints = (keypoints - min_coordinates) / (max_coordinates - min_coordinates)
+
+    return keypoints
