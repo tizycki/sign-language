@@ -27,10 +27,15 @@ docker run \
 
 1.2.4 Example - processing images:
 ```
-./build/examples/openpose/openpose.bin \
+bash ./build/examples/openpose/openpose.bin \
     --image_dir ./data/video_frames \
     --display 0 \
     --write_json ./data/openpose_output \
     --write_images ./data/openpose_output \
     --hand
+```
+```
+python3 ./utils/keypoints_from_images.py \
+    --image_dir ./data/video_frames/internal_resource_2323_fps10 \
+    --write_json ./data/keypoints/internal_resource_2323_fps10
 ```
