@@ -56,7 +56,8 @@ RUN apt-get -qq install -y \
 
 RUN python3 -m pip install -U pip && \
     python3 -m pip install \
-        opencv-python &&\
+        opencv-python \
+        tqdm &&\
     apt-get -qq install -y \
         libopencv-dev
 
@@ -67,8 +68,5 @@ RUN export PYTHONPATH=/usr/bin/python3 && \
     cd build && \
     cmake -DBUILD_PYTHON=ON .. && \
     make -j`nproc`
-
-RUN python3 -m pip install \
-        tqdm
 
 WORKDIR /sign-language
