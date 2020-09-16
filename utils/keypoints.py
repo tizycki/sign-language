@@ -30,12 +30,16 @@ def read_keypoints(file_path):
             keypoints = json.loads(row)
 
     # Extract and concatenate selected keypoints
-    results = np.concatenate([
-        np.array(keypoints['people'][0]['pose_keypoints_2d']).reshape(-1, 3)[keypoints_filter, :2],
-        np.array(keypoints['people'][0]['hand_left_keypoints_2d']).reshape(-1, 3)[:, :2],
-        np.array(keypoints['people'][0]['hand_right_keypoints_2d']).reshape(-1, 3)[:, :2]],
-        axis=0
-    )
+    if keypoints['people']:
+        results = np.concatenate([
+            np.array(keypoints['people'][0]['pose_keypoints_2d']).reshape(-1, 3)[keypoints_filter, :2],
+            np.array(keypoints['people'][0]['hand_left_keypoints_2d']).reshape(-1, 3)[:, :2],
+            np.array(keypoints['people'][0]['hand_right_keypoints_2d']).reshape(-1, 3)[:, :2]],
+            axis=0
+        )
+    else:
+        results = np.zeros((1, 0))
+
     return results
 
 
