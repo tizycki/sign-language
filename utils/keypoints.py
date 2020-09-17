@@ -1,26 +1,29 @@
 import json
 import numpy as np
+from tqdm import tqdm
+
+# Select keypoints to extract
+keypoints_map = {
+    'nose': 0,
+    'neck': 1,
+    'right_shoulder': 2,
+    'right_elbow': 3,
+    'right_wrist': 4,
+    'left_shoulder': 5,
+    'left_elbow': 6,
+    'left_wrist': 7,
+    'middle_hip': 8,
+    'right_hip': 9,
+    'left_hip': 12,
+    'right_eye': 15,
+    'left_eye': 16,
+    'right_ear': 17,
+    'left_ear': 18,
+}
+OUTPUT_KEYPOINTS_NUM = len(keypoints_map) + 21 + 21
 
 
 def read_keypoints(file_path):
-    # Select keypoints to extract
-    keypoints_map = {
-        'nose': 0,
-        'neck': 1,
-        'right_shoulder': 2,
-        'right_elbow': 3,
-        'right_wrist': 4,
-        'left_shoulder': 5,
-        'left_elbow': 6,
-        'left_wrist': 7,
-        'middle_hip': 8,
-        'right_hip': 9,
-        'left_hip': 12,
-        'right_eye': 15,
-        'left_eye': 16,
-        'right_ear': 17,
-        'left_ear': 18,
-    }
     keypoints_filter = list(keypoints_map.values())
 
     # Read json file with keypoints
@@ -49,6 +52,30 @@ def rescale_keypoints(keypoints: np.array) -> np.array:
     min_coordinates = np.min(keypoints, axis=0)
 
     # Filter
-    keypoints = (keypoints - min_coordinates) / (max_coordinates - min_coordinates)
+    denominator = max_coordinates - min_coordinates
+    denominator[(denominator == 0.0)] = 1.0
+    keypoints = (keypoints - min_coordinates) / denominator
 
     return keypoints
+
+
+def read_rescale_keypoints_list(keypoints_json_paths) -> np.array:
+
+    results = []
+    for keypoints_json in tqdm(keypoints_json_paths):
+        keypoints = rescale_keypoints(read_keypoints(keypoints_json))
+        results.append(keypoints)
+
+    return np.array(results).reshape([len(keypoints_json_paths), OUTPUT_KEYPOINTS_NUM, 2])
+
+
+def keypoints_sequence_padding(keypoints_sequence, output_length):
+    output_sequence = np.copy(keypoints_sequence)
+    input_seq_length = keypoints_sequence.shape[0]
+
+    if input_seq_length < output_length:
+        pad_sequence = np.zeros([output_length - input_seq_length, keypoints_sequence.shape[1], keypoints_sequence.shape[2]])
+        pad_sequence[:] = keypoints_sequence[input_seq_length - 1]
+        output_sequence = np.append(output_sequence, pad_sequence, axis=0)
+
+    return output_sequence[:output_length]
