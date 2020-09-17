@@ -18,17 +18,24 @@ docker build -t openpose-custom .
 ```
 docker run \
     -it \
+    --rm \
     --mount type=bind,source="$(pwd)"/data,target=/sign-language/data \
+    --mount type=bind,source="$(pwd)"/utils,target=/sign-language/utils \
     --net=host \
     -e DISPLAY --runtime=nvidia openpose-custom
 ```
 
 1.2.4 Example - processing images:
 ```
-./build/examples/openpose/openpose.bin \
+bash ./build/examples/openpose/openpose.bin \
     --image_dir ./data/video_frames \
     --display 0 \
     --write_json ./data/openpose_output \
     --write_images ./data/openpose_output \
     --hand
+```
+```
+python3 ./utils/keypoints_from_images.py \
+    --image_dir ./data/video_frames/internal_resource_2328_fps10 \
+    --write_json ./data/keypoints/internal_resource_2328_fps10
 ```

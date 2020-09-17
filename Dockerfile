@@ -56,17 +56,17 @@ RUN apt-get -qq install -y \
 
 RUN python3 -m pip install -U pip && \
     python3 -m pip install \
-        opencv-python &&\
+        opencv-python \
+        tqdm &&\
     apt-get -qq install -y \
         libopencv-dev
 
-RUN cd sign-language/openpose && \
+RUN export PYTHONPATH=/usr/bin/python3 && \
+    cd sign-language/openpose && \
     rm -rf build || true && \
     mkdir build && \
     cd build && \
     cmake -DBUILD_PYTHON=ON .. && \
     make -j`nproc`
-
-COPY ./utils/* /sign-language/utils/
 
 WORKDIR /sign-language
