@@ -2,7 +2,7 @@ import json
 import numpy as np
 from tqdm import tqdm
 
-# Select keypoints to extract
+# Body keypoints to extract
 keypoints_map = {
     'nose': 0,
     'neck': 1,
@@ -20,10 +20,17 @@ keypoints_map = {
     'right_ear': 17,
     'left_ear': 18,
 }
+# Set number of output keypoints
 OUTPUT_KEYPOINTS_NUM = len(keypoints_map) + 21 + 21
 
 
-def read_keypoints(file_path):
+def read_keypoints(file_path: str) -> np.array:
+    """
+    Read body, left-hand, right-hand keypoints from JSON file
+    :param file_path: path to json file with skeleton keypoints
+    :return: numpy array of keypoints
+    """
+    # Set filter for body keypoints
     keypoints_filter = list(keypoints_map.values())
 
     # Read json file with keypoints
@@ -47,6 +54,11 @@ def read_keypoints(file_path):
 
 
 def rescale_keypoints(keypoints: np.array) -> np.array:
+    """
+    Rescale coordinates of keypoints array to range [0,1]. Output is a bounding-box with keypoints
+    :param keypoints: numpy array of keypoints for single video frame
+    :return: numpy array of rescaled keypoints
+    """
     # Get params for min-max scaling
     max_coordinates = np.max(keypoints, axis=0)
     min_coordinates = np.min(keypoints, axis=0)
@@ -59,8 +71,12 @@ def rescale_keypoints(keypoints: np.array) -> np.array:
     return keypoints
 
 
-def read_rescale_keypoints_list(keypoints_json_paths) -> np.array:
-
+def read_rescale_keypoints_list(keypoints_json_paths: list) -> np.array:
+    """
+    Read and rescale list of keypoints (as list of JSON files)
+    :param keypoints_json_paths: list of paths to JSON files with keypoints
+    :return: numpy array of all rescaled keypoints
+    """
     results = []
     for keypoints_json in tqdm(keypoints_json_paths):
         keypoints = rescale_keypoints(read_keypoints(keypoints_json))
@@ -69,7 +85,13 @@ def read_rescale_keypoints_list(keypoints_json_paths) -> np.array:
     return np.array(results).reshape([len(keypoints_json_paths), OUTPUT_KEYPOINTS_NUM, 2])
 
 
-def keypoints_sequence_padding(keypoints_sequence, output_length):
+def keypoints_sequence_padding(keypoints_sequence: np.array, output_length: int) -> np.array:
+    """
+    Performs sequence padding with last frame. If sequence is too long, it returns first N frames
+    :param keypoints_sequence: numpy array of keypoints sequence
+    :param output_length: length of output sequence
+    :return: fixed shape (output_length param) numpy array of sequence after padding
+    """
     output_sequence = np.copy(keypoints_sequence)
     input_seq_length = keypoints_sequence.shape[0]
 
