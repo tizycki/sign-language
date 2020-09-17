@@ -4,31 +4,43 @@ import os
 import glob
 
 
-def video_to_images(video_path, output_dir, file_name_prefix, output_fps, rotate, create_subdir=True, start_frame=0,
-                    end_frame=-1):
-
-    # Video capture
+def video_to_images(video_path: str, output_dir: str, file_name_prefix: str, output_fps: int, rotate: bool,
+                    create_subdir: bool = True, start_frame: int = 0, end_frame: int = -1):
+    """
+    Split input video into frames (images), rotate them (if specified) and save in output directory
+    :param video_path: path to input video
+    :param output_dir: path to directory for results
+    :param file_name_prefix: frame (image) file prefix
+    :param output_fps: number of FPS for results
+    :param rotate: flag to rotate video by 90 degrees clock-wise
+    :param create_subdir: flag to create additional sub-folder for results
+    :param start_frame: number of frame to start with
+    :param end_frame: number of frame to end with
+    :return: no return
+    """
+    # Create video capture
     frame_count = 0
     video_capture = cv2.VideoCapture(video_path)
 
-    # Video info
+    # Set video params
     input_fps = video_capture.get(cv2.CAP_PROP_FPS)
     frames_total = int(video_capture.get(cv2.CAP_PROP_FRAME_COUNT))
     video_duration = int(frames_total / input_fps)
     output_frames_total = int(frames_total * int(output_fps) / input_fps)
-    print(f"Input video info:\nInput FPS: {input_fps}\nDuration: {video_duration}")
-
     if end_frame == -1:
         end_frame = output_frames_total
 
-    # Create subdirectory for results
+    # Print video info
+    print(f"Input video info:\nInput FPS: {input_fps}\nDuration: {video_duration}")
+
+    # Set output path
+    video_name = f"{os.path.basename(video_path).split('.')[0].replace(' ', '_')}_fps{int(output_fps):02d}"
     if create_subdir:
-        video_name = f"{os.path.basename(video_path).split('.')[0].replace(' ', '_')}_fps{int(output_fps):02d}"
         output_path = os.path.join(output_dir, video_name)
     else:
         output_path = output_dir
 
-    # Create or erase sub-folder for results
+    # Create or erase directory for results
     if not os.path.exists(output_path):
         os.mkdir(output_path)
         print(f"Create output sub-folder: {video_name} in output_directory: {output_dir}")
@@ -38,7 +50,7 @@ def video_to_images(video_path, output_dir, file_name_prefix, output_fps, rotate
             os.remove(file)
         print(f"Removed content of directory: {output_path}")
 
-    # Iterate through video and save images
+    # Iterate through video and save frames as images
     while video_capture.isOpened():
         # Set output fps
         video_capture.set(cv2.CAP_PROP_POS_MSEC, frame_count * 1000 / float(output_fps))
@@ -50,7 +62,7 @@ def video_to_images(video_path, output_dir, file_name_prefix, output_fps, rotate
 
         # Save frame
         if has_frame:
-            # Skip if not in frame range
+            # Skip if not in frame range defined by user
             if frame_count < start_frame:
                 print('Frame skipped.')
                 frame_count += 1
