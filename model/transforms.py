@@ -3,7 +3,9 @@ from utils.keypoints import keypoints_sequence_padding
 
 
 class RotateKeypoints(object):
-
+    """
+    Transformer for keypoints rotation
+    """
     def __init__(self, min_angle, max_angle):
         self.min_angle = min_angle
         self.max_angle = max_angle
@@ -13,7 +15,9 @@ class RotateKeypoints(object):
 
 
 class RotateKeypointsSequence(object):
-
+    """
+    Transformer for rotation of keypoints sequence
+    """
     def __init__(self, min_angle, max_angle):
         self.min_angle = min_angle
         self.max_angle = max_angle
@@ -23,6 +27,9 @@ class RotateKeypointsSequence(object):
 
 
 class KeypointsSequencePadding(object):
+    """
+    Transformer for padding of keypoints sequence
+    """
     def __init__(self, output_length):
         self.output_length = output_length
 
