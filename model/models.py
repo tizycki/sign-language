@@ -55,7 +55,7 @@ class SequenceRecognitionNet(nn.Module):
         output = x.view(x.size(0), -1)
 
         output = self.fc1(output)
-        output = self.relurelu(output)
+        output = self.relu(output)
         self.dropout1(output)
 
         output = self.fc2(output)
