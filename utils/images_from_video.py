@@ -4,7 +4,8 @@ import os
 import glob
 
 
-def video_to_images(video_path, output_dir, file_name_prefix, output_fps, rotate, start_frame=0, end_frame=-1):
+def video_to_images(video_path, output_dir, file_name_prefix, output_fps, rotate, create_subdir=True, start_frame=0,
+                    end_frame=-1):
 
     # Video capture
     frame_count = 0
@@ -21,8 +22,11 @@ def video_to_images(video_path, output_dir, file_name_prefix, output_fps, rotate
         end_frame = output_frames_total
 
     # Create subdirectory for results
-    video_name = f"{os.path.basename(video_path).split('.')[0].replace(' ', '_')}_fps{int(output_fps):02d}"
-    output_path = os.path.join(output_dir, video_name)
+    if create_subdir:
+        video_name = f"{os.path.basename(video_path).split('.')[0].replace(' ', '_')}_fps{int(output_fps):02d}"
+        output_path = os.path.join(output_dir, video_name)
+    else:
+        output_path = output_dir
 
     # Create or erase sub-folder for results
     if not os.path.exists(output_path):
