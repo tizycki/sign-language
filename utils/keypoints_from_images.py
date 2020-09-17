@@ -9,6 +9,16 @@ OPENPOSE_PATH = '/sign-language/openpose/'
 
 
 def keypoints_from_images(image_dir, write_json):
+    """
+    Use openpose tool to convert images into JSON files with keypoints
+    :param image_dir: directory of input images
+    :param write_json: directory of output JSON files with keypoints
+    :return:
+    """
+    # Set timer
+    start = time.time()
+
+    # Load openpose module
     try:
         sys.path.append(os.path.join(OPENPOSE_PATH, 'build/python'))
         from openpose import pyopenpose as op
@@ -16,7 +26,7 @@ def keypoints_from_images(image_dir, write_json):
         print('Error: OpenPose library could not be found.')
         raise e
 
-    # Params
+    # Set openpose params
     params = dict()
     params['write_json'] = write_json
     params['display'] = 0
@@ -27,14 +37,13 @@ def keypoints_from_images(image_dir, write_json):
     params['model_pose'] = 'BODY_25'
     params['keypoint_scale'] = 0  # 3 -> scales to range [0,1] where (0,0) is top-left corner
 
-    # Starting OpenPose
+    # Create openpose python wrapper
     op_wrapper = op.WrapperPython()
     op_wrapper.configure(params)
     op_wrapper.start()
 
-    # Read frames on directory
+    # Read frames from input directory
     image_paths = op.get_images_on_directory(image_dir)
-    start = time.time()
 
     # Process and display images
     for image_path in tqdm(image_paths):
@@ -44,6 +53,7 @@ def keypoints_from_images(image_dir, write_json):
         datum.name = os.path.basename(image_path).split('.')[0]
         op_wrapper.emplaceAndPop([datum])
 
+    # Print execution time
     end = time.time()
     print("Keypoints extraction successfully finished. Total time: " + str(end - start) + " seconds")
 
