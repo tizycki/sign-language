@@ -36,6 +36,6 @@ bash ./build/examples/openpose/openpose.bin \
 ```
 ```
 python3 ./utils/keypoints_from_images.py \
-    --image_dir ./data/video_frames/internal_resource_2328_fps10 \
-    --write_json ./data/keypoints/internal_resource_2328_fps10
+    --image_dir ./data/video_frames/internal_resource_2334_fps10 \
+    --write_json ./data/keypoints/internal_resource_2334_fps10
 ```
