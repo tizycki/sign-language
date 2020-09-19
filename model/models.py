@@ -123,11 +123,11 @@ class SequenceRecognitionNetLSTM(nn.Module):
             dropout=dropout,
             batch_first=True
         )
-        self.fc1 = nn.Linear(hidden_size, hidden_size)
+        self.fc1 = nn.Linear(hidden_size, 1024)
         self.dropout1 = nn.Dropout(0.1)
-        self.fc2 = nn.Linear(hidden_size, out_class_num)
-        self.dropout2 = nn.Dropout(0.1)
-        self.relu = nn.ReLU()
+        self.fc2 = nn.Linear(1024, 128)
+        self.fc3 = nn.Linear(128, out_class_num)
+        self.relu1 = nn.ReLU()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
@@ -139,12 +139,13 @@ class SequenceRecognitionNetLSTM(nn.Module):
         lstm_out, _ = self.lstm1(x.view(len(x), 1, -1))
 
         output = self.fc1(lstm_out.view(len(x), -1))
-        output = self.relu(output)
+        output = self.relu1(output)
         self.dropout1(output)
 
         output = self.fc2(output)
-        output = self.relu(output)
-        self.dropout2(output)
+        output = self.relu1(output)
+
+        output = self.fc3(output)
 
         return output
 
