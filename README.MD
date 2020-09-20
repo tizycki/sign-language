@@ -1,8 +1,8 @@
 # Video-based sign-language translator
 
-Project in early development stage.
+Project in early development stage. First sprint results: 
 
-First sprint results: https://www.youtube.com/watch?v=AE37kCrilGg&ab_channel=TomaszI%C5%BCycki
+https://www.youtube.com/watch?v=7gSr-jBhM1c&ab_channel=TomaszI%C5%BCycki
 
 ## 1. Installation
 ### 1.1 Environment
