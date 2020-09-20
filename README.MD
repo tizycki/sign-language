@@ -1,5 +1,9 @@
 # Video-based sign-language translator
 
+Project in early development stage. First sprint results: 
+
+https://www.youtube.com/watch?v=7gSr-jBhM1c&ab_channel=TomaszI%C5%BCycki
+
 ## 1. Installation
 ### 1.1 Environment
 ```
@@ -35,7 +39,8 @@ bash ./build/examples/openpose/openpose.bin \
     --hand
 ```
 ```
-python3 ./utils/keypoints_from_images.py \
-    --image_dir ./data/video_frames/internal_resource_2334_fps10 \
-    --write_json ./data/keypoints/internal_resource_2334_fps10
+python3 ./utils/openpose_wrapper.py \
+    --image_dir ./data/video_frames/internal_resource_2337_fps10 \
+    --write_json ./data/keypoints/internal_resource_2337_fps10 \
+    --write_images ./data/rendered_images/internal_resource_2337_fps10
 ```

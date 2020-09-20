@@ -1,4 +1,4 @@
-from utils.keypoints import rescale_keypoints, read_keypoints
+from utils.keypoints import rescale_keypoints, read_keypoints, rescale_keypoints_sequence
 from torch.utils.data import Dataset
 import numpy as np
 import pandas as pd
@@ -108,10 +108,13 @@ class SequenceKeypointsDataset(Dataset):
         # Load from disk, rescale keypoints and append results
         keypoints_sequence = []
         for keypoints_path in self.annotations.iloc[index].keypoints_path:
-            keypoints = rescale_keypoints(read_keypoints(keypoints_path))
+            keypoints = read_keypoints(keypoints_path)
             keypoints_sequence.append(keypoints)
 
-        return np.array(keypoints_sequence).reshape([len(keypoints_sequence), -1, 2])
+        keypoints_sequence = np.array(keypoints_sequence).reshape([len(keypoints_sequence), -1, 2])
+        keypoints_sequence = rescale_keypoints_sequence(keypoints_sequence)
+
+        return keypoints_sequence
 
     def load_target(self, index: int) -> int:
         """

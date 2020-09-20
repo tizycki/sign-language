@@ -53,6 +53,24 @@ def read_keypoints(file_path: str) -> np.array:
     return results
 
 
+def rescale_keypoints_sequence(keypoints_sequence: np.array) -> np.array:
+    """
+    Rescale coordinates of keypoints sequence array to range [0,1]. Output is a bounding-box with keypoints
+    :param keypoints_sequence: numpy array of keypoints for whole sequence of keypoints
+    :return: numpy array of rescaled keypoints sequence
+    """
+    # Get params for min-max scaling
+    max_coordinates = np.max(np.max(keypoints_sequence, axis=0), axis=0)
+    min_coordinates = np.min(np.min(keypoints_sequence, axis=0), axis=0)
+
+    # Filter
+    denominator = max_coordinates - min_coordinates
+    denominator[(denominator == 0.0)] = 1.0
+    keypoints_sequence[:, :] = (keypoints_sequence[:, :] - min_coordinates) / denominator
+
+    return keypoints_sequence
+
+
 def rescale_keypoints(keypoints: np.array) -> np.array:
     """
     Rescale coordinates of keypoints array to range [0,1]. Output is a bounding-box with keypoints
@@ -79,10 +97,13 @@ def read_rescale_keypoints_list(keypoints_json_paths: list) -> np.array:
     """
     results = []
     for keypoints_json in tqdm(keypoints_json_paths):
-        keypoints = rescale_keypoints(read_keypoints(keypoints_json))
+        keypoints = read_keypoints(keypoints_json)
         results.append(keypoints)
 
-    return np.array(results).reshape([len(keypoints_json_paths), OUTPUT_KEYPOINTS_NUM, 2])
+    results = np.array(results).reshape(len(keypoints_json_paths), OUTPUT_KEYPOINTS_NUM, 2)
+    results = rescale_keypoints_sequence(results)
+
+    return results
 
 
 def keypoints_sequence_padding(keypoints_sequence: np.array, output_length: int) -> np.array:
